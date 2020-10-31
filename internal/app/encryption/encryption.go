@@ -2,8 +2,10 @@ package encryption
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	"usefull.pkg/des/internal/app/keys"
 	"usefull.pkg/des/internal/pkg/binary"
 )
 
@@ -20,6 +22,19 @@ func ip(s []string) []string {
 		s[62], s[54], s[46], s[38], s[30], s[22], s[14], s[7]}
 }
 
+func getKeys() []string {
+	// Ask for the initial 8 ascii key
+	var str string
+	fmt.Println("What is you initial key: ")
+	fmt.Scanln(&str)
+
+	if len(str) != 8 {
+		os.Exit(0)
+	}
+
+	return keys.GenerateKeys(str)
+}
+
 // Ipl1 function is the implementation of the IP^-1 permutation in the DES encryption
 func ipl1(s []string) []string {
 
@@ -34,25 +49,25 @@ func ipl1(s []string) []string {
 }
 
 // EncryptMessage ...
-func EncryptMessage(s string) {
+func EncryptMessage(message string) {
 	// convert the message into binary
-	b := binary.StringToBinary(s)
+	binaryMessage := binary.StringToBinary(message)
 	// split the binary string into a slice of strings
-	m := strings.Split(b, "")
+	binarySlice := strings.Split(binaryMessage, "")
 	fmt.Println("binary: ")
-	fmt.Println(m)
+	fmt.Println(binarySlice)
 
 	// make the IP inital permutation
 	fmt.Println("permutation:")
-	ti := ip(m)
-	fmt.Println(ti)
+	binaryIP := ip(binarySlice)
+	fmt.Println(binaryIP)
 
 	// generate the keys for the rounds
 	keys := getKeys()
 
 	// make the rounds
-	for i, k := range keys {
-		fmt.Println(rounds.Round(ti, k, i))
+	for i, key := range keys {
+		fmt.Println(Round(binaryIP, key, i))
 		break
 	}
 

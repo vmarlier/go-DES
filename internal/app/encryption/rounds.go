@@ -18,45 +18,48 @@ func expansion(s []string) []string {
 		s[27], s[28], s[27], s[28], s[29], s[30], s[31], s[0]}
 }
 
+func subtitution(s []string) {
+}
+
 // Round is the most important part in the DES encryption
 // The stages are Right block expension -> XOR Right block and Ki -> subtitution -> permutation -> XOR Right block and left block
-func Round(ti []string, k string, i int) []string {
+func Round(binaryIP []string, key string, i int) []string {
 	fmt.Printf("Round n°%v\n", i)
 
 	// separate the message into 2 blocks
-	l := ti[:32]
-	r := ti[32:]
+	leftBlock := binaryIP[:32]
+	rightBlock := binaryIP[32:]
 	fmt.Println("separation:")
-	fmt.Print(l)
-	fmt.Println(r)
-	fmt.Println(len(l))
-	fmt.Println(len(r))
+	fmt.Print(leftBlock)
+	fmt.Println(rightBlock)
+	fmt.Println(len(leftBlock))
+	fmt.Println(len(rightBlock))
 
-	// r expension
-	re := expansion(r)
+	// r expansion
+	rightBlockExpanded := expansion(rightBlock)
 	fmt.Println("expansion:")
 	fmt.Print("re :")
-	fmt.Println(re)
-	fmt.Println(len(re))
+	fmt.Println(rightBlockExpanded)
+	fmt.Println(len(rightBlockExpanded))
 
 	fmt.Println("key:")
-	fmt.Println(k)
+	fmt.Println(key)
 
 	// join the slices and turn them into decimal int
-	ri, _ := strconv.ParseUint(strings.Join(re, ""), 2, 0)
-	ki, _ := strconv.ParseUint(k, 2, 0)
+	rightBlockExpandedInt, _ := strconv.ParseUint(strings.Join(rightBlockExpanded, ""), 2, 0)
+	keyInt, _ := strconv.ParseUint(key, 2, 0)
 
 	// XOR on the decimals int
-	rx := ri ^ ki
+	rightBlockXorKey := rightBlockExpandedInt ^ keyInt
 	fmt.Println("XOR:")
-	fmt.Println(rx)
+	fmt.Println(rightBlockXorKey)
 
-	// Convert back to base 2 string
-	re = strings.Split(strconv.FormatUint(rx, 2), "")
+	// convert back to base 2 string
+	rightBlockExpanded = strings.Split(strconv.FormatUint(rightBlockXorKey, 2), "")
 	fmt.Println("Back to binary:")
-	fmt.Println(re)
+	fmt.Println(rightBlockExpanded)
 
-	// Fonction de substitution
+	// subtitution
 
 	return []string{}
 }

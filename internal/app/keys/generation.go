@@ -72,26 +72,26 @@ func pc2(s []string) []string {
 // GenerateKeys will take a ascii key (8 characters) and return 16 keys of 48 bits
 func GenerateKeys(str string) (keys []string) {
 	// turn the ascii key into binary key (64 bits)
-	ki := binary.StringToBinary(str)
+	initialKey := binary.StringToBinary(str)
 
 	// split the 64 bits key into a slice of string
-	kr := strings.Split(ki, "")
+	initialKeySlice := strings.Split(initialKey, "")
 
 	// make the PC-1 permutation and get the c and d blocks (28 bits each)
-	c, d := pc1(kr)
+	leftBlock, rightBlock := pc1(initialKeySlice)
 
 	// create the leftShift Index
 	lsIndex := []int{1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1}
 
 	for i := 0; i < 16; i++ {
 		// leftShift on c and d blocks
-		c = leftShift(c, lsIndex[i])
-		d = leftShift(d, lsIndex[i])
+		leftBlock = leftShift(leftBlock, lsIndex[i])
+		rightBlock = leftShift(rightBlock, lsIndex[i])
 		// concatenate the 2 blocks
-		cd := append(c, d...)
+		concatenateKey := append(leftBlock, rightBlock...)
 
 		// make the PC-2 permutation
-		keys = append(keys, strings.Join(pc2(cd), ""))
+		keys = append(keys, strings.Join(pc2(concatenateKey), ""))
 	}
 
 	return keys
