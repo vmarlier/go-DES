@@ -65,7 +65,7 @@ func EncryptMessage(message string) {
 	// generate the keys for the rounds
 	keys := getKeys()
 
-	// make the rounds
+	// the rounds is supposed to be done 16 times, we have 16 keys so let's take the keys for range
 	for i, key := range keys {
 		fmt.Println(Round(binaryIP, key, i))
 		break
