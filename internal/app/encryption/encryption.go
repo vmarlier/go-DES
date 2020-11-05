@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"usefull.pkg/des/internal/app/keys"
-	"usefull.pkg/des/internal/pkg/binary"
+	"go-des/internal/app/keys"
+	"go-des/internal/pkg/binary"
 )
 
 // Ip function is the implementation of the IP permutation in the DES encryption
@@ -65,10 +65,8 @@ func EncryptMessage(message string) {
 	// generate the keys for the rounds
 	keys := getKeys()
 
-	// the rounds is supposed to be done 16 times, we have 16 keys so let's take the keys for range
-	for i, key := range keys {
-		fmt.Println(Round(binaryIP, key, i))
-		break
-	}
-
+	// 16 rounds to get L16 and R16 blocks
+	l16, r16 := Rounds(binaryIP, keys)
+	fmt.Println(l16)
+	fmt.Println(r16)
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"usefull.pkg/des/internal/app/encryption"
+	"go-des/internal/app/encryption"
 )
 
 func encrypt() {
@@ -12,8 +12,6 @@ func encrypt() {
 	fmt.Scanln(&word)
 
 	encryption.EncryptMessage(word)
-
-	//return encrypt.EncryptMessage(word)
 }
 
 func main() {

@@ -3,7 +3,7 @@ package keys
 import (
 	"strings"
 
-	"usefull.pkg/des/internal/pkg/binary"
+	"go-des/internal/pkg/binary"
 )
 
 // Pc1 function is the implementation of the PC-1 permutation in the keys generating process

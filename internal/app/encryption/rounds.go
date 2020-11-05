@@ -87,7 +87,11 @@ func subtitution(s []string) []string {
 		}
 
 		// add a "0" bit if the result is inferior to 7 -> "111" -> "0111"
-		if substitutionResult <= 7 {
+		if substitutionResult <= 1 {
+			resultString += "000" + strconv.FormatUint(uint64(substitutionResult), 2)
+		} else if substitutionResult <= 3 {
+			resultString += "00" + strconv.FormatUint(uint64(substitutionResult), 2)
+		} else if substitutionResult <= 7 {
 			resultString += "0" + strconv.FormatUint(uint64(substitutionResult), 2)
 		} else {
 			resultString += strconv.FormatUint(uint64(substitutionResult), 2)
@@ -105,53 +109,66 @@ func permutationP(s []string) []string {
 		s[18], s[12], s[29], s[5], s[21], s[10], s[3], s[25]}
 }
 
-// Round is the most important part in the DES encryption
+// Rounds is the most important part in the DES encryption
 // The stages are Right block expension -> XOR Right block and Ki -> subtitution -> permutation -> XOR Right block and left block
-func Round(binaryIP []string, key string, i int) []string {
-	fmt.Printf("Round n°%v\n", i)
-
+func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
 	// separate the message into 2 blocks
 	leftBlock := binaryIP[:32]
 	rightBlock := binaryIP[32:]
-	fmt.Println("separation:")
-	fmt.Print(leftBlock)
-	fmt.Println(rightBlock)
-	fmt.Println(len(leftBlock))
-	fmt.Println(len(rightBlock))
 
-	// r expansion
-	rightBlockExpanded := expansion(rightBlock)
-	fmt.Println("expansion:")
-	fmt.Print("re :")
-	fmt.Println(rightBlockExpanded)
-	fmt.Println(len(rightBlockExpanded))
+	for i := 0; i < 16; i++ {
+		fmt.Printf("Round n°%v\n", i)
 
-	fmt.Println("key:")
-	fmt.Println(key)
+		// r expansion
+		rightBlockExpanded := expansion(rightBlock)
 
-	// join the slices and turn them into decimal int
-	rightBlockExpandedInt, _ := strconv.ParseUint(strings.Join(rightBlockExpanded, ""), 2, 0)
-	keyInt, _ := strconv.ParseUint(key, 2, 0)
+		// join the slices and turn them into decimal int
+		rightBlockExpandedInt, _ := strconv.ParseUint(strings.Join(rightBlockExpanded, ""), 2, 0)
+		keyInt, _ := strconv.ParseUint(keys[i], 2, 0)
 
-	// XOR on the decimals int
-	rightBlockXorKey := rightBlockExpandedInt ^ keyInt
-	fmt.Println("XOR:")
-	fmt.Println(rightBlockXorKey)
+		// XOR on the decimals int
+		rightBlockXorKey := rightBlockExpandedInt ^ keyInt
 
-	// convert back to base 2 string
-	rightBlockExpanded = strings.Split(strconv.FormatUint(rightBlockXorKey, 2), "")
-	fmt.Println("Back to binary:")
-	fmt.Println(rightBlockExpanded)
+		// convert back to base 2 string
+		xorRightBlockXorString := strconv.FormatUint(rightBlockXorKey, 2)
+		// Error can occur here cause in binary 0011 = 11, so we check the lenght and add 0 at the begining to have 32 bits
+		if len(xorRightBlockXorString) < 48 {
+			for i := 0; i <= 49-len(xorRightBlockXorString); i++ {
+				xorRightBlockXorString = "0" + xorRightBlockXorString
+			}
+		}
+		rightBlockExpanded = strings.Split(xorRightBlockXorString, "")
 
-	// subtitution
-	substitutionResult := subtitution(rightBlockExpanded)
-	fmt.Println("substitution Result")
-	fmt.Println(substitutionResult)
+		// subtitution
+		substitutionResult := subtitution(rightBlockExpanded)
 
-	// make the permutation with the substitution result
-	permutationPResult := permutationP(substitutionResult)
-	fmt.Println("permutation Result")
-	fmt.Println(permutationPResult)
+		// make the permutation with the substitution result
+		permutationPResult := permutationP(substitutionResult)
 
-	return []string{}
+		// XOR leftBlock and permutationPResult
+		permutationPResultInt, _ := strconv.ParseUint(strings.Join(permutationPResult, ""), 2, 0)
+		leftBlockInt, _ := strconv.ParseUint(strings.Join(leftBlock, ""), 2, 0)
+		xorResult := permutationPResultInt ^ leftBlockInt
+		xorResultString := strconv.FormatUint(xorResult, 2)
+
+		// Error can occur here cause in binary 0011 = 11, so we check the lenght and add 0 at the begining to have 32 bits
+		if len(xorResultString) < 32 {
+			for i := 0; i <= 33-len(xorResultString); i++ {
+				xorResultString = "0" + xorResultString
+			}
+		}
+		xorResultSplit := strings.Split(xorResultString, "")
+
+		// defined xorResult as Ri+1 (rightBlock) and rightBlock as Li+1 (leftBlock)
+		rightBlock = xorResultSplit
+		fmt.Println("L1")
+		fmt.Println(leftBlock)
+		fmt.Println(len(leftBlock))
+		fmt.Println("R1")
+		fmt.Println(rightBlock)
+		fmt.Println(len(rightBlock))
+	}
+
+	// return
+	return leftBlock, rightBlock
 }
