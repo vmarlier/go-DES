@@ -56,17 +56,24 @@ func EncryptMessage(message string) {
 	binarySlice := strings.Split(binaryMessage, "")
 	fmt.Println("binary: ")
 	fmt.Println(binarySlice)
+	fmt.Print("\n")
 
 	// make the IP inital permutation
 	fmt.Println("permutation:")
 	binaryIP := ip(binarySlice)
 	fmt.Println(binaryIP)
+	fmt.Print("\n")
 
 	// generate the keys for the rounds
 	keys := getKeys()
 
 	// 16 rounds to get L16 and R16 blocks
 	l16, r16 := Rounds(binaryIP, keys)
+	fmt.Println("rounds:")
 	fmt.Println(l16)
+	fmt.Println(len(l16))
 	fmt.Println(r16)
+	fmt.Println(len(r16))
+	fmt.Print("\n")
+
 }

@@ -132,10 +132,8 @@ func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
 		// convert back to base 2 string
 		xorRightBlockXorString := strconv.FormatUint(rightBlockXorKey, 2)
 		// Error can occur here cause in binary 0011 = 11, so we check the lenght and add 0 at the begining to have 32 bits
-		if len(xorRightBlockXorString) < 48 {
-			for i := 0; i <= 49-len(xorRightBlockXorString); i++ {
-				xorRightBlockXorString = "0" + xorRightBlockXorString
-			}
+		for len(xorRightBlockXorString) < 48 {
+			xorRightBlockXorString = "0" + xorRightBlockXorString
 		}
 		rightBlockExpanded = strings.Split(xorRightBlockXorString, "")
 
@@ -152,23 +150,16 @@ func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
 		xorResultString := strconv.FormatUint(xorResult, 2)
 
 		// Error can occur here cause in binary 0011 = 11, so we check the lenght and add 0 at the begining to have 32 bits
-		if len(xorResultString) < 32 {
-			for i := 0; i <= 33-len(xorResultString); i++ {
-				xorResultString = "0" + xorResultString
-			}
+		for len(xorResultString) < 32 {
+			xorResultString = "0" + xorResultString
 		}
+
 		xorResultSplit := strings.Split(xorResultString, "")
 
 		// defined xorResult as Ri+1 (rightBlock) and rightBlock as Li+1 (leftBlock)
 		rightBlock = xorResultSplit
-		fmt.Println("L1")
-		fmt.Println(leftBlock)
-		fmt.Println(len(leftBlock))
-		fmt.Println("R1")
-		fmt.Println(rightBlock)
-		fmt.Println(len(rightBlock))
 	}
 
-	// return
+	// return the 2 blocs L16 and R16
 	return leftBlock, rightBlock
 }
