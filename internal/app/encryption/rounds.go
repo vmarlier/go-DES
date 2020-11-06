@@ -1,7 +1,6 @@
 package encryption
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -48,10 +47,10 @@ func subtitution(s []string) []string {
 		[4]int{9, 7, 2, 9}, [4]int{2, 12, 8, 5}, [4]int{6, 9, 12, 15}, [4]int{8, 5, 3, 10},
 		[4]int{0, 6, 7, 11}, [4]int{13, 1, 0, 14}, [4]int{3, 13, 4, 1}, [4]int{4, 14, 10, 7},
 		[4]int{14, 0, 1, 6}, [4]int{7, 11, 13, 0}, [4]int{5, 3, 11, 8}, [4]int{11, 8, 6, 13}}
-	substitutionMatrix7 := [16][4]int{[4]int{0, 13, 1, 6}, [4]int{4, 0, 4, 11}, [4]int{11, 11, 11, 13}, [4]int{2, 7, 13, 8},
-		[4]int{14, 4, 12, 1}, [4]int{15, 9, 3, 4}, [4]int{0, 1, 7, 10}, [4]int{8, 10, 14, 7},
-		[4]int{13, 14, 10, 9}, [4]int{3, 3, 15, 5}, [4]int{12, 5, 6, 0}, [4]int{9, 12, 8, 15},
-		[4]int{7, 2, 0, 14}, [4]int{5, 15, 5, 2}, [4]int{10, 8, 9, 3}, [4]int{6, 6, 2, 12}}
+	substitutionMatrix7 := [16][4]int{[4]int{4, 13, 1, 6}, [4]int{11, 0, 4, 11}, [4]int{2, 11, 11, 13}, [4]int{14, 7, 13, 8},
+		[4]int{15, 4, 12, 1}, [4]int{0, 9, 3, 4}, [4]int{8, 1, 7, 10}, [4]int{13, 10, 14, 7},
+		[4]int{3, 14, 10, 9}, [4]int{12, 3, 15, 5}, [4]int{9, 5, 6, 0}, [4]int{7, 12, 8, 15},
+		[4]int{5, 2, 0, 14}, [4]int{10, 15, 5, 2}, [4]int{6, 8, 9, 3}, [4]int{1, 6, 2, 12}}
 	substitutionMatrix8 := [16][4]int{[4]int{13, 1, 7, 2}, [4]int{2, 15, 11, 1}, [4]int{8, 13, 4, 14}, [4]int{4, 8, 1, 7},
 		[4]int{6, 10, 9, 4}, [4]int{15, 3, 12, 10}, [4]int{11, 7, 14, 8}, [4]int{1, 4, 2, 13},
 		[4]int{10, 12, 0, 15}, [4]int{9, 5, 6, 12}, [4]int{3, 6, 10, 9}, [4]int{14, 11, 13, 0},
@@ -106,7 +105,7 @@ func permutationP(s []string) []string {
 	return []string{s[15], s[6], s[19], s[20], s[28], s[11], s[27], s[16],
 		s[0], s[14], s[22], s[25], s[4], s[17], s[30], s[9],
 		s[1], s[7], s[23], s[13], s[31], s[26], s[2], s[8],
-		s[18], s[12], s[29], s[5], s[21], s[10], s[3], s[25]}
+		s[18], s[12], s[29], s[5], s[21], s[10], s[3], s[24]}
 }
 
 // Rounds is the most important part in the DES encryption
@@ -117,8 +116,6 @@ func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
 	rightBlock := binaryIP[32:]
 
 	for i := 0; i < 16; i++ {
-		fmt.Printf("Round n°%v\n", i)
-
 		// r expansion
 		rightBlockExpanded := expansion(rightBlock)
 
@@ -127,37 +124,37 @@ func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
 		keyInt, _ := strconv.ParseUint(keys[i], 2, 0)
 
 		// XOR on the decimals int
-		rightBlockXorKey := rightBlockExpandedInt ^ keyInt
+		tmpUint := rightBlockExpandedInt ^ keyInt
 
 		// convert back to base 2 string
-		xorRightBlockXorString := strconv.FormatUint(rightBlockXorKey, 2)
+		tmpString := strconv.FormatUint(tmpUint, 2)
 		// Error can occur here cause in binary 0011 = 11, so we check the lenght and add 0 at the begining to have 32 bits
-		for len(xorRightBlockXorString) < 48 {
-			xorRightBlockXorString = "0" + xorRightBlockXorString
+		for len(tmpString) < 48 {
+			tmpString = "0" + tmpString
 		}
-		rightBlockExpanded = strings.Split(xorRightBlockXorString, "")
+		rightBlockExpanded = strings.Split(tmpString, "")
 
 		// subtitution
-		substitutionResult := subtitution(rightBlockExpanded)
+		tmp := subtitution(rightBlockExpanded)
 
 		// make the permutation with the substitution result
-		permutationPResult := permutationP(substitutionResult)
+		tmp = permutationP(tmp)
 
 		// XOR leftBlock and permutationPResult
-		permutationPResultInt, _ := strconv.ParseUint(strings.Join(permutationPResult, ""), 2, 0)
+		tmpUint, _ = strconv.ParseUint(strings.Join(tmp, ""), 2, 0)
 		leftBlockInt, _ := strconv.ParseUint(strings.Join(leftBlock, ""), 2, 0)
-		xorResult := permutationPResultInt ^ leftBlockInt
-		xorResultString := strconv.FormatUint(xorResult, 2)
+		tmpUint = tmpUint ^ leftBlockInt
+		tmpString = strconv.FormatUint(tmpUint, 2)
 
 		// Error can occur here cause in binary 0011 = 11, so we check the lenght and add 0 at the begining to have 32 bits
-		for len(xorResultString) < 32 {
-			xorResultString = "0" + xorResultString
+		for len(tmpString) < 32 {
+			tmpString = "0" + tmpString
 		}
-
-		xorResultSplit := strings.Split(xorResultString, "")
+		tmp = strings.Split(tmpString, "")
 
 		// defined xorResult as Ri+1 (rightBlock) and rightBlock as Li+1 (leftBlock)
-		rightBlock = xorResultSplit
+		leftBlock = rightBlock
+		rightBlock = tmp
 	}
 
 	// return the 2 blocs L16 and R16

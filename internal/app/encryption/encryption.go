@@ -17,9 +17,9 @@ func ip(s []string) []string {
 		s[61], s[53], s[45], s[37], s[29], s[21], s[13], s[5],
 		s[63], s[55], s[47], s[39], s[31], s[23], s[15], s[7],
 		s[56], s[48], s[40], s[32], s[24], s[16], s[8], s[0],
-		s[58], s[50], s[42], s[34], s[26], s[18], s[10], s[3],
+		s[58], s[50], s[42], s[34], s[26], s[18], s[10], s[2],
 		s[60], s[52], s[44], s[36], s[28], s[20], s[12], s[4],
-		s[62], s[54], s[46], s[38], s[30], s[22], s[14], s[7]}
+		s[62], s[54], s[46], s[38], s[30], s[22], s[14], s[6]}
 }
 
 func getKeys() []string {
@@ -27,6 +27,7 @@ func getKeys() []string {
 	var str string
 	fmt.Println("What is you initial key: ")
 	fmt.Scanln(&str)
+	fmt.Print("\n")
 
 	if len(str) != 8 {
 		os.Exit(0)
@@ -54,26 +55,19 @@ func EncryptMessage(message string) {
 	binaryMessage := binary.StringToBinary(message)
 	// split the binary string into a slice of strings
 	binarySlice := strings.Split(binaryMessage, "")
-	fmt.Println("binary: ")
-	fmt.Println(binarySlice)
-	fmt.Print("\n")
 
 	// make the IP inital permutation
 	fmt.Println("permutation:")
 	binaryIP := ip(binarySlice)
-	fmt.Println(binaryIP)
-	fmt.Print("\n")
 
 	// generate the keys for the rounds
 	keys := getKeys()
 
 	// 16 rounds to get L16 and R16 blocks
 	l16, r16 := Rounds(binaryIP, keys)
-	fmt.Println("rounds:")
-	fmt.Println(l16)
-	fmt.Println(len(l16))
-	fmt.Println(r16)
-	fmt.Println(len(r16))
-	fmt.Print("\n")
 
+	// ip-1 initial reverse permutation
+	lr16 := append(r16, l16...)
+	fmt.Println("message chiffré")
+	fmt.Println(strings.Join(ipl1(lr16), ""))
 }
