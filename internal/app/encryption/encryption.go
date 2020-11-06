@@ -132,5 +132,5 @@ func DecryptMessage(message string) {
 	}
 
 	fmt.Println("Original Message:")
-	fmt.Println(strings.Trim(res, ".."))
+	fmt.Println(res)
 }
