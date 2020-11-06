@@ -49,25 +49,88 @@ func ipl1(s []string) []string {
 		s[32], s[0], s[40], s[8], s[48], s[16], s[56], s[24]}
 }
 
+// Chunks take from https://github.com/igrmk/golang-chunks-benchmarks
+func Chunks(s string, chunkSize int) []string {
+	if chunkSize >= len(s) {
+		return []string{s}
+	}
+	var chunks []string
+	chunk := make([]rune, chunkSize)
+	len := 0
+	for _, r := range s {
+		chunk[len] = r
+		len++
+		if len == chunkSize {
+			chunks = append(chunks, string(chunk))
+			len = 0
+		}
+	}
+	if len > 0 {
+		chunks = append(chunks, string(chunk[:len]))
+	}
+	return chunks
+}
+
 // EncryptMessage ...
 func EncryptMessage(message string) {
-	// convert the message into binary
-	binaryMessage := binary.StringToBinary(message)
-	// split the binary string into a slice of strings
-	binarySlice := strings.Split(binaryMessage, "")
-
-	// make the IP inital permutation
-	fmt.Println("permutation:")
-	binaryIP := ip(binarySlice)
+	// truncate the message in 64bits blocks
+	chunks := Chunks(message, 8)
 
 	// generate the keys for the rounds
 	keys := getKeys()
 
-	// 16 rounds to get L16 and R16 blocks
-	l16, r16 := Rounds(binaryIP, keys)
+	var res string
 
-	// ip-1 initial reverse permutation
-	lr16 := append(r16, l16...)
-	fmt.Println("message chiffré")
-	fmt.Println(strings.Join(ipl1(lr16), ""))
+	for _, chunk := range chunks {
+		for len(chunk) < 8 {
+			chunk += "."
+		}
+
+		// convert the message into binary
+		binaryMessage := binary.StringToBinary(chunk)
+		// split the binary string into a slice of strings
+		binarySlice := strings.Split(binaryMessage, "")
+
+		// make the IP inital permutation
+		binaryIP := ip(binarySlice)
+
+		// 16 rounds to get L16 and R16 blocks
+		l16, r16 := Rounds(binaryIP, keys, false)
+		// ip-1 initial reverse permutation
+		lr16 := append(r16, l16...)
+
+		res += strings.Join(ipl1(lr16), "")
+	}
+
+	fmt.Println("Encrypted Message:")
+	fmt.Println(res)
+}
+
+// DecryptMessage ...
+func DecryptMessage(message string) {
+	// truncate the message in 64bits blocks
+	chunks := Chunks(message, 64)
+
+	// generate the keys for the rounds
+	keys := getKeys()
+
+	var res string
+
+	for _, chunk := range chunks {
+		// split the binary string into a slice of strings
+		binarySlice := strings.Split(chunk, "")
+
+		// make the IP inital permutation
+		binaryIP := ip(binarySlice)
+
+		// 16 rounds to get L16 and R16 blocks
+		l16, r16 := Rounds(binaryIP, keys, true)
+		// ip-1 initial reverse permutation
+		lr16 := append(r16, l16...)
+
+		res += binary.ToString(strings.Join(ipl1(lr16), ""))
+	}
+
+	fmt.Println("Original Message:")
+	fmt.Println(strings.Trim(res, ".."))
 }

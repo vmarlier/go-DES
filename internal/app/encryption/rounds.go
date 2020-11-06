@@ -110,7 +110,7 @@ func permutationP(s []string) []string {
 
 // Rounds is the most important part in the DES encryption
 // The stages are Right block expension -> XOR Right block and Ki -> subtitution -> permutation -> XOR Right block and left block
-func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
+func Rounds(binaryIP []string, keys []string, decrypt bool) (l16 []string, r16 []string) {
 	// separate the message into 2 blocks
 	leftBlock := binaryIP[:32]
 	rightBlock := binaryIP[32:]
@@ -121,7 +121,13 @@ func Rounds(binaryIP []string, keys []string) (l16 []string, r16 []string) {
 
 		// join the slices and turn them into decimal int
 		rightBlockExpandedInt, _ := strconv.ParseUint(strings.Join(rightBlockExpanded, ""), 2, 0)
-		keyInt, _ := strconv.ParseUint(keys[i], 2, 0)
+		var keyInt uint64
+
+		if decrypt == false {
+			keyInt, _ = strconv.ParseUint(keys[i], 2, 0)
+		} else if decrypt == true {
+			keyInt, _ = strconv.ParseUint(keys[15-i], 2, 0)
+		}
 
 		// XOR on the decimals int
 		tmpUint := rightBlockExpandedInt ^ keyInt
