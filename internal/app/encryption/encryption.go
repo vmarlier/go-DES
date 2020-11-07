@@ -72,7 +72,7 @@ func Chunks(s string, chunkSize int) []string {
 }
 
 // EncryptMessage ...
-func EncryptMessage(message string) {
+func EncryptMessage(message string, encodage int) {
 	// truncate the message in 64bits blocks
 	chunks := Chunks(message, 8)
 
@@ -99,15 +99,33 @@ func EncryptMessage(message string) {
 		// ip-1 initial reverse permutation
 		lr16 := append(r16, l16...)
 
-		res += strings.Join(ipl1(lr16), "")
+		if encodage != 0 {
+			res += binary.ToString(strings.Join(ipl1(lr16), ""))
+		} else {
+			res += strings.Join(ipl1(lr16), "")
+		}
 	}
 
 	fmt.Println("Encrypted Message:")
-	fmt.Println(res)
+	// set encodage == true is for hexadecimal
+	// encodage == false is for base64
+	// if encode is nil go binary
+	if encodage == 2 {
+		fmt.Println(binary.ToHex(res))
+	} else if encodage == 1 {
+		fmt.Println(binary.ToB64(res))
+	} else {
+		fmt.Println(res)
+	}
 }
 
 // DecryptMessage ...
-func DecryptMessage(message string) {
+func DecryptMessage(message string, encodage int) {
+	if encodage == 2 {
+		message = binary.HexToBinary(message)
+	} else if encodage == 1 {
+		message = binary.B64ToBinary(message)
+	}
 	// truncate the message in 64bits blocks
 	chunks := Chunks(message, 64)
 
