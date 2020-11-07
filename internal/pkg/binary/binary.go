@@ -58,7 +58,10 @@ func ToString(s string) (res string) {
 	}
 
 	for _, a := range arr {
-		tmp, _ := strconv.ParseUint(a, 2, 0)
+		tmp, err := strconv.ParseUint(a, 2, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
 		res += string(tmp)
 	}
 

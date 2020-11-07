@@ -1,6 +1,7 @@
 package encryption
 
 import (
+	"log"
 	"strconv"
 	"strings"
 )
@@ -61,9 +62,15 @@ func subtitution(s []string) []string {
 
 	for i, dividedBlock := range dividedBlocks {
 		// to determine the x you have to take the bits 2,3,4,5 on the concording dividedBlock and turn it into decimal
-		xMatrix, _ := strconv.ParseUint(strings.Join(dividedBlock[1:5], ""), 2, 0)
+		xMatrix, err := strconv.ParseUint(strings.Join(dividedBlock[1:5], ""), 2, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
 		// to determine the y you have to take the bits 1,6 on the concording dividedBlock and turn it into decimal
-		yMatrix, _ := strconv.ParseUint(strings.Join([]string{dividedBlock[0], dividedBlock[5]}, ""), 2, 0)
+		yMatrix, err := strconv.ParseUint(strings.Join([]string{dividedBlock[0], dividedBlock[5]}, ""), 2, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// choose the substitution matrix matching the divided Block
 		switch i {
@@ -120,13 +127,19 @@ func Rounds(binaryIP []string, keys []string, decrypt bool) (l16 []string, r16 [
 		rightBlockExpanded := expansion(rightBlock)
 
 		// join the slices and turn them into decimal int
-		rightBlockExpandedInt, _ := strconv.ParseUint(strings.Join(rightBlockExpanded, ""), 2, 0)
+		rightBlockExpandedInt, err := strconv.ParseUint(strings.Join(rightBlockExpanded, ""), 2, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
 		var keyInt uint64
 
 		if decrypt == false {
-			keyInt, _ = strconv.ParseUint(keys[i], 2, 0)
+			keyInt, err = strconv.ParseUint(keys[i], 2, 0)
 		} else if decrypt == true {
-			keyInt, _ = strconv.ParseUint(keys[15-i], 2, 0)
+			keyInt, err = strconv.ParseUint(keys[15-i], 2, 0)
+		}
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		// XOR on the decimals int
@@ -147,8 +160,14 @@ func Rounds(binaryIP []string, keys []string, decrypt bool) (l16 []string, r16 [
 		tmp = permutationP(tmp)
 
 		// XOR leftBlock and permutationPResult
-		tmpUint, _ = strconv.ParseUint(strings.Join(tmp, ""), 2, 0)
-		leftBlockInt, _ := strconv.ParseUint(strings.Join(leftBlock, ""), 2, 0)
+		tmpUint, err = strconv.ParseUint(strings.Join(tmp, ""), 2, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
+		leftBlockInt, err := strconv.ParseUint(strings.Join(leftBlock, ""), 2, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
 		tmpUint = tmpUint ^ leftBlockInt
 		tmpString = strconv.FormatUint(tmpUint, 2)
 

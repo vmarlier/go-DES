@@ -9,7 +9,7 @@ import (
 	"go-des/internal/pkg/binary"
 )
 
-// Ip function is the implementation of the IP permutation in the DES encryption
+// ip function is the implementation of the IP permutation in the DES encryption
 func ip(s []string) []string {
 
 	return []string{s[57], s[49], s[41], s[33], s[25], s[17], s[9], s[1],
@@ -36,7 +36,7 @@ func getKeys() []string {
 	return keys.GenerateKeys(str)
 }
 
-// Ipl1 function is the implementation of the IP^-1 permutation in the DES encryption
+// ipl1 function is the implementation of the IP^-1 permutation in the DES encryption
 func ipl1(s []string) []string {
 
 	return []string{s[39], s[7], s[47], s[15], s[55], s[23], s[63], s[31],
@@ -49,8 +49,8 @@ func ipl1(s []string) []string {
 		s[32], s[0], s[40], s[8], s[48], s[16], s[56], s[24]}
 }
 
-// Chunks take from https://github.com/igrmk/golang-chunks-benchmarks
-func Chunks(s string, chunkSize int) []string {
+// chunks take from https://github.com/igrmk/golang-chunks-benchmarks
+func chunks(s string, chunkSize int) []string {
 	if chunkSize >= len(s) {
 		return []string{s}
 	}
@@ -74,14 +74,14 @@ func Chunks(s string, chunkSize int) []string {
 // EncryptMessage ...
 func EncryptMessage(message string, encodage int) {
 	// truncate the message in 64bits blocks
-	chunks := Chunks(message, 8)
+	chnks := chunks(message, 8)
 
 	// generate the keys for the rounds
 	keys := getKeys()
 
 	var res string
 
-	for _, chunk := range chunks {
+	for _, chunk := range chnks {
 		for len(chunk) < 8 {
 			chunk += "."
 		}
@@ -127,14 +127,14 @@ func DecryptMessage(message string, encodage int) {
 		message = binary.B64ToBinary(message)
 	}
 	// truncate the message in 64bits blocks
-	chunks := Chunks(message, 64)
+	chnks := chunks(message, 64)
 
 	// generate the keys for the rounds
 	keys := getKeys()
 
 	var res string
 
-	for _, chunk := range chunks {
+	for _, chunk := range chnks {
 		// split the binary string into a slice of strings
 		binarySlice := strings.Split(chunk, "")
 

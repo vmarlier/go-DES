@@ -7,44 +7,38 @@ import (
 	"go-des/internal/app/encryption"
 )
 
-func encrypt(s string, i int) {
-	encryption.EncryptMessage(s, i)
-}
-
-func decrypt(s string, i int) {
-	encryption.DecryptMessage(s, i)
-}
-
 func main() {
 	if len(os.Args) == 1 || len(os.Args) > 1 && os.Args[1] == "--help" {
+		// print the --help page
 		helper()
 	} else if len(os.Args) > 1 && os.Args[1] == "-e" && os.Args[2] != "" {
 		// if -b64 -> encode in base64
 		// else -h hexa
 		// else binary
 		if os.Args[2] == "-b64" {
-			encrypt(os.Args[3], 1)
+			encryption.EncryptMessage(os.Args[3], 1)
 		} else if os.Args[2] == "-h" {
-			encrypt(os.Args[3], 2)
+			encryption.EncryptMessage(os.Args[3], 2)
 		} else if os.Args[2] == "-b" {
-			encrypt(os.Args[3], 0)
+			encryption.EncryptMessage(os.Args[3], 0)
 		} else {
-			encrypt(os.Args[2], 0)
+			encryption.EncryptMessage(os.Args[2], 0)
 		}
 	} else if len(os.Args) > 1 && os.Args[1] == "-d" && os.Args[2] != "" {
 		// if -b64 -> decode in base64
 		// else -h hexa
 		// else binary
 		if os.Args[2] == "-b64" {
-			decrypt(os.Args[3], 1)
+			encryption.DecryptMessage(os.Args[3], 1)
 		} else if os.Args[2] == "-h" {
-			decrypt(os.Args[3], 2)
+			encryption.DecryptMessage(os.Args[3], 2)
 		} else if os.Args[2] == "-b" {
-			decrypt(os.Args[3], 0)
+			encryption.DecryptMessage(os.Args[3], 0)
 		} else {
-			decrypt(os.Args[2], 0)
+			encryption.DecryptMessage(os.Args[2], 0)
 		}
 	} else {
+		// print the helper is no arguments is given
 		helper()
 	}
 }
