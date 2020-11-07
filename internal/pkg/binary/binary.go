@@ -1,6 +1,7 @@
 package binary
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -32,12 +33,17 @@ func HexToBinary(s string) string {
 
 // ToB64 take a ascii string and return a base64 string
 func ToB64(s string) string {
-	return ""
+	return base64.StdEncoding.EncodeToString([]byte(s))
 }
 
 // B64ToBinary take a base64 string and return a binary string
 func B64ToBinary(s string) string {
-	return ""
+	decoded, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return StringToBinary(string(decoded))
 }
 
 // ToString take a string of 64 bits and return an ascii string
