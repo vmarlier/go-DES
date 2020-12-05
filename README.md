@@ -2,6 +2,8 @@
 
 Implementation of DES algorithm in golang.
 
+Warning: DES uses 64-bits block to processing the encryption, so you can't run go-DES on a 32-bits architecture.
+
 ## How to build ?
 ```
 $ go build -o go-des ./cmd/main.go
