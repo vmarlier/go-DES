@@ -25,7 +25,7 @@ func ip(s []string) []string {
 func getEncryptionKeys() []string {
 	// Ask for the initial 8 ascii key
 	var str string
-	fmt.Println("Enter DES encryption key: ")
+	fmt.Println("Enter DES encryption key (key lenght must be between 1 and 8 bytes (8 to 64 bits)): ")
 	fmt.Scanln(&str)
 	fmt.Print("\n")
 
@@ -43,7 +43,7 @@ func getEncryptionKeys() []string {
 func getDecryptionKeys() []string {
 	// Ask for the initial 8 ascii key
 	var str string
-	fmt.Println("Enter DES decryption key: ")
+	fmt.Println("Enter DES decryption key (key lenght must be between 1 and 8 bytes (8 to 64 bits)): ")
 	fmt.Scanln(&str)
 	fmt.Print("\n")
 
