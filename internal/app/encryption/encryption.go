@@ -2,7 +2,7 @@ package encryption
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"strings"
 
 	"go-des/internal/app/keys"
@@ -22,15 +22,37 @@ func ip(s []string) []string {
 		s[62], s[54], s[46], s[38], s[30], s[22], s[14], s[6]}
 }
 
-func getKeys() []string {
+func getEncryptionKeys() []string {
 	// Ask for the initial 8 ascii key
 	var str string
-	fmt.Println("What is you initial key: ")
+	fmt.Println("Enter DES encryption key: ")
 	fmt.Scanln(&str)
 	fmt.Print("\n")
 
-	if len(str) != 8 {
-		os.Exit(0)
+	for len(str) < 8 {
+		str += "."
+	}
+
+	if len(str) > 8 && len(str)%8 != 0 {
+		log.Fatalln("The key lenght must be <= 8 octet or a multiple of 8.")
+	}
+
+	return keys.GenerateKeys(str)
+}
+
+func getDecryptionKeys() []string {
+	// Ask for the initial 8 ascii key
+	var str string
+	fmt.Println("Enter DES decryption key: ")
+	fmt.Scanln(&str)
+	fmt.Print("\n")
+
+	for len(str) < 8 {
+		str += "."
+	}
+
+	if len(str) > 8 && len(str)%8 != 0 {
+		log.Fatalln("The key lenght must be <= 8 octet or a multiple of 8.")
 	}
 
 	return keys.GenerateKeys(str)
@@ -77,7 +99,7 @@ func EncryptMessage(message string, encodage int) {
 	chnks := chunks(message, 8)
 
 	// generate the keys for the rounds
-	keys := getKeys()
+	keys := getEncryptionKeys()
 
 	var res string
 
@@ -130,7 +152,7 @@ func DecryptMessage(message string, encodage int) {
 	chnks := chunks(message, 64)
 
 	// generate the keys for the rounds
-	keys := getKeys()
+	keys := getDecryptionKeys()
 
 	var res string
 
